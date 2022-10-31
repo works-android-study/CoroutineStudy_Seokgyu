@@ -45,6 +45,8 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.paging:paging-common-ktx:3.1.1'
+
 
     /**************************** Version of dependency ****************************/
     def jetpack_navigation_version = "2.5.2"
@@ -52,6 +54,7 @@ dependencies {
     def mockito_version = "3.11.2"
     def espresso_version = "3.4.0"
     def okhttp3_version = "4.7.2"
+    def paging_version = "3.1.1"
 
     /**************************** Dependency ****************************/
     // android
@@ -87,6 +90,11 @@ dependencies {
     // retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+
+    // paging
+    implementation "androidx.paging:paging-common-ktx:$paging_version"
+    implementation "androidx.paging:paging-runtime:$paging_version"
+    implementation "androidx.paging:paging-compose:1.0.0-alpha16"
 
     /**************************** Test ****************************/
     testImplementation "junit:junit:4.13.2"
