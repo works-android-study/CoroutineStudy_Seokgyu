@@ -7,7 +7,7 @@ class SearchImageRepository @Inject constructor(
     private val searchImageService: SearchImageService
 ) {
 
-    suspend fun fetchSearchImage(query: String): SearchImageApiResponse {
-        return searchImageService.searchImage(query)
+    suspend fun fetchSearchImage(query: String, display: Int, start: Int): SearchImageApiResponse {
+        return searchImageService.searchImage(query, display = display, start = start)
     }
 }

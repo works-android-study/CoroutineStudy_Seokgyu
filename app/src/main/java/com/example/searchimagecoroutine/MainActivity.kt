@@ -2,11 +2,13 @@ package com.example.searchimagecoroutine
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,25 +22,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     private val viewModel: SearchImageViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Column {
                 SearchAppBar()
-                ImageView()
+                ImageList()
             }
         }
     }
 
     @Composable
     private fun SearchAppBar() {
-        var query = remember { mutableStateOf(TextFieldValue("")) }
+        var query = remember { viewModel.inputText }
 
         TextField(
             value = query.value,
@@ -47,7 +51,8 @@ class MainActivity : AppCompatActivity() {
             },
             leadingIcon = {
                 IconButton(onClick = {
-                    viewModel.fetchSearchImage(query.value.text)
+                    viewModel.setSearchText(viewModel.inputText.value.text)
+                    viewModel.inputText.value = TextFieldValue("")
                 }) {
                     Icon(
                         imageVector = Icons.Rounded.Search,
@@ -68,7 +73,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Composable
-    fun ImageView() {
-        GlideImage(imageModel = viewModel.firstImageItem.observeAsState().value?.link)
+    fun ImageList() {
+        val list = viewModel.flow.collectAsLazyPagingItems()
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 128.dp),
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            content = {
+                items(list.itemCount) { idx ->
+                    list[idx]?.let {
+                        ImageView(link = it.link)
+                    }
+                }
+            })
+    }
+
+    @Composable
+    fun ImageView(link: String) {
+        GlideImage(
+            imageModel = link,
+            modifier = Modifier.size(128.dp)
+        )
     }
 }
