@@ -28,6 +28,9 @@
                     android:value="" />
         </activity>
 
+        <activity android:name=".detail.DetailActivity"
+                android:exported="true"/>
+
 
     </application>
 

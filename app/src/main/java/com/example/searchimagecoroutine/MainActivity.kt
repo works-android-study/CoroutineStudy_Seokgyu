@@ -1,11 +1,13 @@
 package com.example.searchimagecoroutine
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -20,10 +22,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.searchimagecoroutine.data.SearchImageApiItem
+import com.example.searchimagecoroutine.detail.DetailActivity
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -83,17 +88,28 @@ class MainActivity : ComponentActivity() {
             content = {
                 items(list.itemCount) { idx ->
                     list[idx]?.let {
-                        ImageView(link = it.link)
+                        ImageView(it)
                     }
                 }
             })
     }
 
     @Composable
-    fun ImageView(link: String) {
+    fun ImageView(item: SearchImageApiItem) {
+        val context = LocalContext.current
         GlideImage(
-            imageModel = link,
+            imageModel = item.link,
             modifier = Modifier.size(128.dp)
+                .clickable {
+                    val intent = DetailActivity.createIntent(
+                        context,
+                        title = item.title,
+                        thumbnail = item.thumbnail,
+                        sizeheight = item.sizeheight,
+                        sizeWidth = item.sizewidth
+                    )
+                    context.startActivity(intent)
+                }
         )
     }
 }
