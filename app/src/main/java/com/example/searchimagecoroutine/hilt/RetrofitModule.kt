@@ -1,6 +1,6 @@
-package com.example.searchimagecoroutine
+package com.example.searchimagecoroutine.hilt
 
-import android.app.Application
+import com.example.searchimagecoroutine.SearchImageService
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -9,7 +9,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -22,6 +21,8 @@ class RetrofitModule {
                 val request = chain.request().newBuilder()
                     .apply {
                         //Todo addHeader 필요
+                        addHeader("X-Naver-Client-Id","LcTGnsYTrp5nQo_oVYSZ")
+                        addHeader("X-Naver-Client-Secret","hMTVmf12Kk")
                     }
                     .build()
                 chain.proceed(request)

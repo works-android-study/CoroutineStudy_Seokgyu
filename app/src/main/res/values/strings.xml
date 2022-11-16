@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">searchImageCoroutine</string>
+    <string name="save_success_to_db">성공적으로 저장했습니다.</string>
 </resources>

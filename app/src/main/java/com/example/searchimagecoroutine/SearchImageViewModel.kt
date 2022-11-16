@@ -17,25 +17,34 @@ import javax.inject.Inject
 class SearchImageViewModel @Inject constructor(
     private val searchImageRepository: SearchImageRepository
 ): ViewModel() {
-    private val _firstImageItem = MutableLiveData<SearchImageApiItem>()
 
+    private val _firstImageItem = MutableLiveData<SearchImageApiItem>()
+    private val _isSuccessSaveSearchItem = MutableLiveData<Boolean>(false)
+    val isSuccessSaveSearchItem: LiveData<Boolean>
+        get() = _isSuccessSaveSearchItem
+
+    var isSearchMode: Boolean = false
     val inputText = mutableStateOf(TextFieldValue(""))
 
-    private val _searchText = MutableLiveData<String>()
+    private val _searchText = MutableLiveData<String>("")
     val searchText: LiveData<String>
         get() = _searchText
 
     fun setSearchText(searchText: String) {
         _searchText.value = searchText
     }
-
     val flow = _searchText.switchMap {
-        Pager(
-            PagingConfig(pageSize = 10)
-        ) {
-            CustomPagingSource(searchImageRepository, it)
-        }.liveData.cachedIn(viewModelScope)
-    }.asFlow()
+                Pager(
+                    PagingConfig(pageSize = 10)
+                ) {
+                    CustomPagingSource(searchImageRepository, it)
+                }.liveData.cachedIn(viewModelScope)
+            }.asFlow()
 
-
+    fun insertSearchItem(searchImageItem: SearchImageApiItem) =
+        viewModelScope.launch {
+            if (searchImageRepository.insertSearchItem(searchImageItem) > 0) {
+                _isSuccessSaveSearchItem.value = true
+            }
+        }
 }

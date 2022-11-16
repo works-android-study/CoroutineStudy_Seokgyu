@@ -55,6 +55,7 @@ dependencies {
     def espresso_version = "3.4.0"
     def okhttp3_version = "4.7.2"
     def paging_version = "3.1.1"
+    def room_version = "2.4.3"
 
     /**************************** Dependency ****************************/
     // android
@@ -95,6 +96,12 @@ dependencies {
     implementation "androidx.paging:paging-common-ktx:$paging_version"
     implementation "androidx.paging:paging-runtime:$paging_version"
     implementation "androidx.paging:paging-compose:1.0.0-alpha16"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    // To use Kotlin annotation processing tool (kapt)
+    kapt "androidx.room:room-compiler:$room_version"
 
     /**************************** Test ****************************/
     testImplementation "junit:junit:4.13.2"

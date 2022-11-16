@@ -1,8 +1,10 @@
 package com.example.searchimagecoroutine
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -16,6 +18,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.searchimagecoroutine.data.SearchImageApiItem
 import com.example.searchimagecoroutine.detail.DetailActivity
+import com.example.searchimagecoroutine.room.entity.SearchImageItem
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,6 +47,7 @@ class MainActivity : ComponentActivity() {
                 ImageList()
             }
         }
+        bindObserver()
     }
 
     @Composable
@@ -58,6 +63,7 @@ class MainActivity : ComponentActivity() {
                 IconButton(onClick = {
                     viewModel.setSearchText(viewModel.inputText.value.text)
                     viewModel.inputText.value = TextFieldValue("")
+                    viewModel.isSearchMode = true
                 }) {
                     Icon(
                         imageVector = Icons.Rounded.Search,
@@ -86,11 +92,11 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             content = {
-                items(list.itemCount) { idx ->
-                    list[idx]?.let {
-                        ImageView(it)
+                    items(list.itemCount) { idx ->
+                        list[idx]?.let {
+                            ImageView(it)
+                        }
                     }
-                }
             })
     }
 
@@ -99,17 +105,27 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         GlideImage(
             imageModel = item.link,
-            modifier = Modifier.size(128.dp)
+            modifier = Modifier
+                .size(128.dp)
                 .clickable {
-                    val intent = DetailActivity.createIntent(
-                        context,
-                        title = item.title,
-                        thumbnail = item.thumbnail,
-                        sizeheight = item.sizeheight,
-                        sizeWidth = item.sizewidth
-                    )
-                    context.startActivity(intent)
+                    viewModel.insertSearchItem(item)
+//                    val intent = DetailActivity.createIntent(
+//                        context,
+//                        title = item.title,
+//                        thumbnail = item.thumbnail,
+//                        sizeheight = item.sizeheight,
+//                        sizeWidth = item.sizewidth
+//                    )
+//                    context.startActivity(intent)
                 }
         )
+    }
+
+    fun bindObserver() {
+        viewModel.isSuccessSaveSearchItem.observe(this) { isSuccess ->
+            if (isSuccess) {
+                Toast.makeText(applicationContext, R.string.save_success_to_db, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

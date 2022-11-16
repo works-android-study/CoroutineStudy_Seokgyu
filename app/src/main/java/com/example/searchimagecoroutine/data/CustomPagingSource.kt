@@ -17,10 +17,15 @@ class CustomPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SearchImageApiItem> {
         val nextPageNum = params.key ?: 0
-        val response = searchImageRepository.fetchSearchImage(query, display = DISPLAY, start = (nextPageNum * DISPLAY) + 1)
+        val response =
+            if (query.isEmpty()) {
+                searchImageRepository.getAllSearchItem()
+            } else {
+                searchImageRepository.fetchSearchImage(query, display = DISPLAY, start = (nextPageNum * DISPLAY) + 1).items
+            }
 
         return LoadResult.Page(
-            data = response.items,
+            data = response,
             prevKey = null,
             nextKey = nextPageNum + 1
         )
