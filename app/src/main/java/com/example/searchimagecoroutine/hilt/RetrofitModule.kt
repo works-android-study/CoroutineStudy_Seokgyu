@@ -1,20 +1,25 @@
 package com.example.searchimagecoroutine.hilt
 
-import com.example.searchimagecoroutine.SearchImageService
+import com.example.searchimagecoroutine.api.DownloadImageService
+import com.example.searchimagecoroutine.api.ProgressResponseBody
+import com.example.searchimagecoroutine.api.SearchImageService
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class RetrofitModule {
 
     @Provides
+    @RetrofitQualifier.SearchRetrofit
     fun provideInterceptorOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor { chain ->
@@ -32,7 +37,7 @@ class RetrofitModule {
 
     @Provides
     fun provideSearchImageService(
-        okHttpClient: OkHttpClient
+        @RetrofitQualifier.SearchRetrofit okHttpClient: OkHttpClient
     ): SearchImageService {
         return Retrofit.Builder()
             .baseUrl("https://openapi.naver.com")
@@ -42,4 +47,26 @@ class RetrofitModule {
             .create(SearchImageService::class.java)
     }
 
+    companion object {
+        fun createDownloadImageClient(onAttachmentDownloadUpdate: (Int) -> Unit): DownloadImageService {
+            val client = OkHttpClient.Builder()
+                .addInterceptor { chain ->
+                    val originalResponse = chain.proceed(chain.request())
+                    originalResponse.newBuilder()
+                        .body(originalResponse.body()?.let { ProgressResponseBody(it,onAttachmentDownloadUpdate) })
+                        .build()
+                }.build()
+
+            return Retrofit.Builder()
+                .baseUrl("https://openapi.naver.com")
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(Gson()))
+                .build()
+                .create(DownloadImageService::class.java)
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideIoDispatcher() = Dispatchers.IO
 }

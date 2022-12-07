@@ -1,6 +1,5 @@
-package com.example.searchimagecoroutine
+package com.example.searchimagecoroutine.api
 
-import com.example.searchimagecoroutine.data.SearchImageApiResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

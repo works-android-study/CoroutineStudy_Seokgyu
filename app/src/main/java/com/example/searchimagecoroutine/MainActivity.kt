@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.searchimagecoroutine.data.SearchImageApiItem
 import com.example.searchimagecoroutine.detail.DetailActivity
@@ -95,9 +98,20 @@ class MainActivity : ComponentActivity() {
                     items(list.itemCount) { idx ->
                         list[idx]?.let {
                             ImageView(it)
+                            //Todo 즐겨찾기버튼 추가
                         }
                     }
             })
+    }
+
+    @Composable
+    fun progressDialog() {
+        AlertDialog(onDismissRequest = {},
+        title = {
+            Text(text = viewModel.downloadLate.observeAsState().value.toString())
+        },
+        confirmButton = {},
+        dismissButton = {})
     }
 
     @Composable
@@ -108,7 +122,8 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier
                 .size(128.dp)
                 .clickable {
-                    viewModel.insertSearchItem(item)
+                    viewModel.imageDownload(item.link, applicationContext.filesDir.absolutePath)
+                    //viewModel.insertSearchItem(item)
 //                    val intent = DetailActivity.createIntent(
 //                        context,
 //                        title = item.title,
@@ -126,6 +141,15 @@ class MainActivity : ComponentActivity() {
             if (isSuccess) {
                 Toast.makeText(applicationContext, R.string.save_success_to_db, Toast.LENGTH_SHORT).show()
             }
+        }
+        viewModel.isSuccessDownloadItem.observe(this) { isSuccess ->
+            if (isSuccess) {
+                Toast.makeText(applicationContext, R.string.save_success_to_db, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        viewModel.downloadLate.observe(this) { it ->
+            Log.d("download", "$it")
         }
     }
 }

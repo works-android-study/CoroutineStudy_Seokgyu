@@ -11,12 +11,34 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import androidx.paging.liveData
 import com.example.searchimagecoroutine.data.CustomPagingSource
+import com.example.searchimagecoroutine.hilt.RetrofitModule
+import kotlinx.coroutines.CoroutineDispatcher
+import okhttp3.ResponseBody
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchImageViewModel @Inject constructor(
-    private val searchImageRepository: SearchImageRepository
+    private val searchImageRepository: SearchImageRepository,
+    private val ioDispatcher: CoroutineDispatcher
 ): ViewModel() {
+    private val imageDownloadClient by lazy {
+        RetrofitModule.createDownloadImageClient {
+            _downloadLate.postValue(it)
+        }
+    }
+
+
+    private val _downloadLate = MutableLiveData<Int>()
+    val downloadLate: LiveData<Int>
+        get() = _downloadLate
+
+    private val _isSuccessDownloadItem = MutableLiveData<Boolean>(false)
+    val isSuccessDownloadItem: LiveData<Boolean>
+    get() = Transformations.map(downloadLate) { it ->
+        it >= 100
+    }
+
 
     private val _firstImageItem = MutableLiveData<SearchImageApiItem>()
     private val _isSuccessSaveSearchItem = MutableLiveData<Boolean>(false)
@@ -47,4 +69,22 @@ class SearchImageViewModel @Inject constructor(
                 _isSuccessSaveSearchItem.value = true
             }
         }
+
+    fun imageDownload(imageUrl: String, filePath: String) = viewModelScope.launch(ioDispatcher) {
+        imageDownloadClient.downloadImage(imageUrl)
+            .use { body ->
+                val fileName = imageUrl.substringAfterLast("/")
+
+                saveFile(body, "$filePath/$fileName")
+            }
+
+    }
+
+    private fun saveFile(body: ResponseBody, filePath: String) {
+        val saveFile = File(filePath)
+        saveFile.outputStream().use { fileOutput ->
+            body.byteStream().copyTo(fileOutput)
+        }
+    }
+
 }

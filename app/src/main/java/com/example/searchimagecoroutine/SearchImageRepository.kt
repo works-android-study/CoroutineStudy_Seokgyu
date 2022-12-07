@@ -1,13 +1,11 @@
 package com.example.searchimagecoroutine
 
+import com.example.searchimagecoroutine.api.SearchImageService
 import com.example.searchimagecoroutine.data.SearchImageApiItem
-import com.example.searchimagecoroutine.data.SearchImageApiResponse
+import com.example.searchimagecoroutine.api.SearchImageApiResponse
 import com.example.searchimagecoroutine.data.toSearchImageApiItem
 import com.example.searchimagecoroutine.data.toSearchImageItem
 import com.example.searchimagecoroutine.room.AppDatabase
-import com.example.searchimagecoroutine.room.dao.SearchImageDao
-import com.example.searchimagecoroutine.room.entity.SearchImageItem
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class SearchImageRepository @Inject constructor(

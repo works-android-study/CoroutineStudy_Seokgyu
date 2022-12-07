@@ -1,4 +1,6 @@
-package com.example.searchimagecoroutine.data
+package com.example.searchimagecoroutine.api
+
+import com.example.searchimagecoroutine.data.SearchImageApiItem
 
 data class SearchImageApiResponse constructor(
     val lastBuildDate: String,

@@ -26,8 +26,8 @@ class CustomPagingSource(
 
         return LoadResult.Page(
             data = response,
-            prevKey = null,
-            nextKey = nextPageNum + 1
+            prevKey = if (nextPageNum == 0) null else nextPageNum - 1,
+            nextKey = if (response.isEmpty()) null else nextPageNum + 1
         )
     }
 
