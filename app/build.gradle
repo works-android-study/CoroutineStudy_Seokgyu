@@ -56,6 +56,7 @@ dependencies {
     def okhttp3_version = "4.7.2"
     def paging_version = "3.1.1"
     def room_version = "2.4.3"
+    def nav_version = "2.5.3"
 
     /**************************** Dependency ****************************/
     // android
@@ -78,8 +79,10 @@ dependencies {
     implementation "androidx.activity:activity-compose:1.6.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
     implementation "androidx.compose.compiler:compiler:$compose_compiler_version"
+    implementation "androidx.navigation:navigation-compose:$nav_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$jetpack_navigation_version"
     implementation "androidx.navigation:navigation-ui-ktx:$jetpack_navigation_version"
+
 
     // hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"

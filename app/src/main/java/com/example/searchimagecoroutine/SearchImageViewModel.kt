@@ -13,6 +13,8 @@ import androidx.paging.liveData
 import com.example.searchimagecoroutine.data.CustomPagingSource
 import com.example.searchimagecoroutine.hilt.RetrofitModule
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import okhttp3.ResponseBody
 import java.io.File
 import javax.inject.Inject
@@ -24,22 +26,28 @@ class SearchImageViewModel @Inject constructor(
 ) : ViewModel() {
     private val imageDownloadClient by lazy {
         RetrofitModule.createDownloadImageClient {
-            _downloadLate.postValue(it)
+            viewModelScope.launch {
+                _downloadRateFLow.emit(it)
+                if (it == 100) {
+                    _isSuccessDownloadItem.postValue(true)
+                    _downloadRateFLow.emit(-1)
+                }
+            }
         }
     }
+    //Todo ApiItem을 사용하는 부분 리팩토링, DTO 정리
+    private val _currentStateItem = MutableLiveData<SearchImageApiItem>()
+    val currentStateItem: LiveData<SearchImageApiItem>
+        get() = _currentStateItem
 
-    private val _downloadLate = MutableLiveData<Int>()
-    val downloadLate: LiveData<Int>
-        get() = _downloadLate
+    private val _downloadRateFLow = MutableStateFlow<Int>(-1)
+    val downloadRateFlow: StateFlow<Int>
+        get() = _downloadRateFLow
 
     private val _isSuccessDownloadItem = MutableLiveData<Boolean>(false)
     val isSuccessDownloadItem: LiveData<Boolean>
-        get() = Transformations.map(downloadLate) { it ->
-            it >= 100
-        }
+        get() = _isSuccessDownloadItem
 
-
-    private val _firstImageItem = MutableLiveData<SearchImageApiItem>()
     private val _isSuccessSaveSearchItem = MutableLiveData<Boolean>(false)
     val isSuccessSaveSearchItem: LiveData<Boolean>
         get() = _isSuccessSaveSearchItem
@@ -53,6 +61,10 @@ class SearchImageViewModel @Inject constructor(
 
     fun setSearchText(searchText: String) {
         _searchText.value = searchText
+    }
+
+    fun setCurrentStateItem(searchImageApiItem: SearchImageApiItem) {
+        _currentStateItem.value = searchImageApiItem
     }
 
     val flow = _searchText.switchMap {

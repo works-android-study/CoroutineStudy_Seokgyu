@@ -9,6 +9,7 @@ data class SearchImageItem(
     val itemId: Int,
     val title: String,
     val link: String,
+    val thumbnail: String,
     val sizeHeight: String,
     val sizeWidth: String
 )

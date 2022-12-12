@@ -16,6 +16,7 @@ fun SearchImageApiItem.toSearchImageItem(): SearchImageItem {
         0,
         this.title,
         this.link,
+        this.thumbnail,
         this.sizeheight,
         this.sizewidth
     )
@@ -25,7 +26,7 @@ fun SearchImageItem.toSearchImageApiItem(): SearchImageApiItem {
     return SearchImageApiItem(
         title = this.title,
         link = this.link,
-        thumbnail = "",
+        thumbnail = this.thumbnail,
         sizeheight = this.sizeHeight,
         sizewidth = this.sizeWidth
     )
