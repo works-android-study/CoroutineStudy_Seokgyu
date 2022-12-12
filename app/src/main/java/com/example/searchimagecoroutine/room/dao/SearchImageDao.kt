@@ -10,6 +10,9 @@ interface SearchImageDao {
     @Query("SELECT * FROM searchimageitem")
     suspend fun getAll(): List<SearchImageItem>
 
+    @Query("SELECT * FROM searchimageitem ORDER BY itemId DESC LIMIT :limit OFFSET :offset")
+    suspend fun getBookmarkItems(limit: Int, offset: Int): List<SearchImageItem>
+
     @Insert
     suspend fun insert(item: SearchImageItem): Long
 }

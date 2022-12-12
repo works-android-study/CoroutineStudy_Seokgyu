@@ -21,13 +21,12 @@ import javax.inject.Inject
 class SearchImageViewModel @Inject constructor(
     private val searchImageRepository: SearchImageRepository,
     private val ioDispatcher: CoroutineDispatcher
-): ViewModel() {
+) : ViewModel() {
     private val imageDownloadClient by lazy {
         RetrofitModule.createDownloadImageClient {
             _downloadLate.postValue(it)
         }
     }
-
 
     private val _downloadLate = MutableLiveData<Int>()
     val downloadLate: LiveData<Int>
@@ -35,9 +34,9 @@ class SearchImageViewModel @Inject constructor(
 
     private val _isSuccessDownloadItem = MutableLiveData<Boolean>(false)
     val isSuccessDownloadItem: LiveData<Boolean>
-    get() = Transformations.map(downloadLate) { it ->
-        it >= 100
-    }
+        get() = Transformations.map(downloadLate) { it ->
+            it >= 100
+        }
 
 
     private val _firstImageItem = MutableLiveData<SearchImageApiItem>()
@@ -55,18 +54,19 @@ class SearchImageViewModel @Inject constructor(
     fun setSearchText(searchText: String) {
         _searchText.value = searchText
     }
+
     val flow = _searchText.switchMap {
-                Pager(
-                    PagingConfig(pageSize = 10)
-                ) {
-                    CustomPagingSource(searchImageRepository, it)
-                }.liveData.cachedIn(viewModelScope)
-            }.asFlow()
+        Pager(
+            PagingConfig(pageSize = CustomPagingSource.DISPLAY)
+        ) {
+            CustomPagingSource(searchImageRepository, it)
+        }.liveData.cachedIn(viewModelScope)
+    }.asFlow()
 
     fun insertSearchItem(searchImageItem: SearchImageApiItem) =
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             if (searchImageRepository.insertSearchItem(searchImageItem) > 0) {
-                _isSuccessSaveSearchItem.value = true
+                _isSuccessSaveSearchItem.postValue(true)
             }
         }
 

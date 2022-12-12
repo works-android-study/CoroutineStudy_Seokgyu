@@ -3,6 +3,7 @@ package com.example.searchimagecoroutine.data
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.searchimagecoroutine.SearchImageRepository
+import com.example.searchimagecoroutine.room.entity.SearchImageItem
 
 class CustomPagingSource(
     private val searchImageRepository: SearchImageRepository,
@@ -19,7 +20,7 @@ class CustomPagingSource(
         val nextPageNum = params.key ?: 0
         val response =
             if (query.isEmpty()) {
-                searchImageRepository.getAllSearchItem()
+                searchImageRepository.getBookmarkItems(nextPageNum, DISPLAY).map { it.toSearchImageApiItem() }
             } else {
                 searchImageRepository.fetchSearchImage(query, display = DISPLAY, start = (nextPageNum * DISPLAY) + 1).items
             }

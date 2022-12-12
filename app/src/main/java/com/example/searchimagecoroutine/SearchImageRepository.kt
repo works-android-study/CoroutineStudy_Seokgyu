@@ -6,6 +6,7 @@ import com.example.searchimagecoroutine.api.SearchImageApiResponse
 import com.example.searchimagecoroutine.data.toSearchImageApiItem
 import com.example.searchimagecoroutine.data.toSearchImageItem
 import com.example.searchimagecoroutine.room.AppDatabase
+import com.example.searchimagecoroutine.room.entity.SearchImageItem
 import javax.inject.Inject
 
 class SearchImageRepository @Inject constructor(
@@ -26,5 +27,9 @@ class SearchImageRepository @Inject constructor(
         return searchImageDatabase.searchImageDao().getAll().map {
             it.toSearchImageApiItem()
         }
+    }
+
+    suspend fun getBookmarkItems(start: Int, size: Int): List<SearchImageItem> {
+        return searchImageDatabase.searchImageDao().getBookmarkItems(size, start * size)
     }
 }
