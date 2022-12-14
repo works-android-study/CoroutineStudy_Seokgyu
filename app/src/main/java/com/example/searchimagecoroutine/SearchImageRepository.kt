@@ -9,7 +9,7 @@ import com.example.searchimagecoroutine.room.AppDatabase
 import com.example.searchimagecoroutine.room.entity.SearchImageItem
 import javax.inject.Inject
 
-class SearchImageRepository @Inject constructor(
+open class SearchImageRepository @Inject constructor(
     private val searchImageService: SearchImageService,
     private val searchImageDatabase: AppDatabase
 

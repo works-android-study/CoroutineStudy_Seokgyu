@@ -41,11 +41,17 @@ android {
     }
     testOptions {
         unitTests.returnDefaultValues = true
+        unitTests.includeAndroidResources = true
     }
+}
+
+hilt {
+    enableTransformForLocalTests = true
 }
 
 dependencies {
     implementation 'androidx.paging:paging-common-ktx:3.1.1'
+    implementation 'androidx.test.ext:junit-ktx:1.1.4'
 
 
     /**************************** Version of dependency ****************************/
@@ -57,7 +63,8 @@ dependencies {
     def paging_version = "3.1.1"
     def room_version = "2.4.3"
     def nav_version = "2.5.3"
-
+    def coroutine_test_version = "1.6.4"
+    def arch_testing_version = "2.1.0"
     /**************************** Dependency ****************************/
     // android
     implementation "androidx.core:core-ktx:1.9.0"
@@ -111,7 +118,11 @@ dependencies {
     // Mockito
     testImplementation "org.mockito:mockito-core:$mockito_version"
     testImplementation "org.mockito:mockito-inline:$mockito_version"
-
+    // kotlinx test
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_test_version"
+    testImplementation "androidx.arch.core:core-testing:$arch_testing_version"
+    testImplementation "androidx.test:runner:1.5.0"
+    testImplementation "org.robolectric:robolectric:4.8.2"
     /**************************** UI Test ****************************/
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.2.1"
 
@@ -131,4 +142,19 @@ dependencies {
     /**************************** Debug ****************************/
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+
+    // For Robolectric tests.
+    testImplementation 'com.google.dagger:hilt-android-testing:2.44'
+    // ...with Kotlin.
+    kaptTest 'com.google.dagger:hilt-android-compiler:2.44'
+    // ...with Java.
+    testAnnotationProcessor 'com.google.dagger:hilt-android-compiler:2.44'
+
+
+    // For instrumented tests.
+    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.44'
+    // ...with Kotlin.
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.44'
+    // ...with Java.
+    androidTestAnnotationProcessor 'com.google.dagger:hilt-android-compiler:2.44'
 }

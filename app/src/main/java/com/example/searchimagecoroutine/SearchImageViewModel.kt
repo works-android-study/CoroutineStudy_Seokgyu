@@ -1,5 +1,6 @@
 package com.example.searchimagecoroutine
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.*
@@ -90,6 +91,11 @@ class SearchImageViewModel @Inject constructor(
                 saveFile(body, "$filePath/$fileName")
             }
 
+    }
+
+    @VisibleForTesting
+    suspend fun emit(count: Int) {
+        this._downloadRateFLow.emit(count)
     }
 
     private fun saveFile(body: ResponseBody, filePath: String) {
